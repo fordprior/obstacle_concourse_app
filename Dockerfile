@@ -44,5 +44,7 @@ FROM     drecom/centos-base:latest
 # install bundler and resolve dependencies  
   RUN gem install bundler
   RUN bundle install
+  
+USER root  
 
 ENTRYPOINT ['bundle', 'exec', 'config.ru', '-p', '8080:8080']
