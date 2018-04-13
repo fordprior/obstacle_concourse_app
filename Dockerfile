@@ -1,6 +1,6 @@
 FROM     drecom/centos-base:latest
 
-####### BEGIN install ruby #######
+####### begin region install ruby #######
   RUN git clone git://github.com/rbenv/rbenv.git /usr/local/rbenv \
   &&  git clone git://github.com/rbenv/ruby-build.git /usr/local/rbenv/plugins/ruby-build \
   &&  git clone git://github.com/jf/rbenv-gemset.git /usr/local/rbenv/plugins/rbenv-gemset \
@@ -26,18 +26,20 @@ FROM     drecom/centos-base:latest
   &&  eval "$(rbenv init -)"; gem update --system \
   &&  eval "$(rbenv init -)"; gem install bundler -f \
   &&  rm -rf /tmp/*
-####### END install ruby #######
+####### end region install ruby #######
 
 
 # install goss https://github.com/aelsabbahy/goss/releases/download/v0.3.5/goss-linux-386
-RUN curl -L https://github.com/aelsabbahy/goss/releases/download/v0.3.5/goss-linux-amd64 -o /usr/local/bin/goss
-RUN chmod +rx /usr/local/bin/goss
+  RUN curl -L https://github.com/aelsabbahy/goss/releases/download/v0.3.5/goss-linux-amd64 -o /usr/local/bin/goss
+  RUN chmod +rx /usr/local/bin/goss
 
 # install dgoss docker wrapper
-RUN curl -L https://raw.githubusercontent.com/aelsabbahy/goss/v0.3.5/extras/dgoss/dgoss -o /usr/local/bin/dgoss
-RUN chmod +rx /usr/local/bin/dgoss
+  RUN curl -L https://raw.githubusercontent.com/aelsabbahy/goss/v0.3.5/extras/dgoss/dgoss -o /usr/local/bin/dgoss
+  RUN chmod +rx /usr/local/bin/dgoss
 
-# add Ruby app & specs
-ADD ./src .
+# create special app directory, add Ruby app & specs to it, and resolve dependencies
+  RUN mkdir app && cd app
+  ADD ./src .
+  RUN bundle install
 
 ENTRYPOINT['bundle', 'exec', 'config.ru', '-p', '8080:8080']
