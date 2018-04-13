@@ -48,3 +48,4 @@ FROM     drecom/centos-base:latest
 USER root  
 
 ENTRYPOINT ['bundle', 'exec', 'config.ru', '-p', '8080:8080']
+ENTRYPOINT /bin/bash -l -c 'bundle exec config.ru -p 8080:8080'
