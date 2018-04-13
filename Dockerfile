@@ -37,9 +37,12 @@ FROM     drecom/centos-base:latest
   RUN curl -L https://raw.githubusercontent.com/aelsabbahy/goss/v0.3.5/extras/dgoss/dgoss -o /usr/local/bin/dgoss
   RUN chmod +rx /usr/local/bin/dgoss
 
-# create special app directory, add Ruby app & specs to it, and resolve dependencies
+# create special app directory & add Ruby app & specs to it
   RUN mkdir app && cd app
   ADD ./src .
+  
+# install bundler and resolve dependencies  
+  RUN gem install bundler
   RUN bundle install
 
 ENTRYPOINT['bundle', 'exec', 'config.ru', '-p', '8080:8080']
