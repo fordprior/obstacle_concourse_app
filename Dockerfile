@@ -1,0 +1,44 @@
+FROM     drecom/centos-base:latest
+
+####### BEGIN install ruby #######
+RUN git clone git://github.com/rbenv/rbenv.git /usr/local/rbenv \
+&&  git clone git://github.com/rbenv/ruby-build.git /usr/local/rbenv/plugins/ruby-build \
+&&  git clone git://github.com/jf/rbenv-gemset.git /usr/local/rbenv/plugins/rbenv-gemset \
+&&  /usr/local/rbenv/plugins/ruby-build/install.sh
+ENV PATH /usr/local/rbenv/bin:$PATH
+ENV RBENV_ROOT /usr/local/rbenv
+
+RUN echo 'export RBENV_ROOT=/usr/local/rbenv' >> /etc/profile.d/rbenv.sh \
+&&  echo 'export PATH=/usr/local/rbenv/bin:$PATH' >> /etc/profile.d/rbenv.sh \
+&&  echo 'eval "$(rbenv init -)"' >> /etc/profile.d/rbenv.sh
+
+RUN echo 'export RBENV_ROOT=/usr/local/rbenv' >> /root/.bashrc \
+&&  echo 'export PATH=/usr/local/rbenv/bin:$PATH' >> /root/.bashrc \
+&&  echo 'eval "$(rbenv init -)"' >> /root/.bashrc
+
+ENV CONFIGURE_OPTS --disable-install-doc
+ENV PATH /usr/local/rbenv/bin:/usr/local/rbenv/shims:$PATH
+
+ENV RBENV_VERSION 2.4.2
+
+RUN eval "$(rbenv init -)"; rbenv install $RBENV_VERSION \
+&&  eval "$(rbenv init -)"; rbenv global $RBENV_VERSION \
+&&  eval "$(rbenv init -)"; gem update --system \
+&&  eval "$(rbenv init -)"; gem install bundler -f \
+&&  rm -rf /tmp/*
+
+####### END install ruby #######
+
+
+# install goss https://github.com/aelsabbahy/goss/releases/download/v0.3.5/goss-linux-386
+RUN curl -L https://github.com/aelsabbahy/goss/releases/download/v0.3.5/goss-linux-amd64 -o /usr/local/bin/goss
+RUN chmod +rx /usr/local/bin/goss
+
+# install dgoss docker wrapper
+RUN curl -L https://raw.githubusercontent.com/aelsabbahy/goss/v0.3.5/extras/dgoss/dgoss -o /usr/local/bin/dgoss
+RUN chmod +rx /usr/local/bin/dgoss
+
+# add Ruby app & specs
+ADD ./src .
+
+ENTRYPOINT['bundle', 'exec', 'config.ru', '-p', '8080:8080']
