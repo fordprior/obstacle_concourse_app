@@ -45,4 +45,4 @@ FROM     drecom/centos-base:latest
   RUN gem install bundler
   RUN bundle install
 
-ENTRYPOINT['bundle', 'exec', 'config.ru', '-p', '8080:8080']
+ENTRYPOINT ['bundle', 'exec', 'config.ru', '-p', '8080:8080']
