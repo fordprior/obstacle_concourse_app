@@ -39,7 +39,7 @@ FROM     drecom/centos-base:latest
 
 # create special app directory & add Ruby app & specs to it
   RUN mkdir app && cd app
-  ADD ./src/app/ .
+  ADD ./src/ .
   
 # install bundler and resolve dependencies  
   RUN gem install bundler
